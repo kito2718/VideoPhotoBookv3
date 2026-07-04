@@ -57,6 +57,8 @@ fun ArViewScreen(
     val pairs = remember { repository.getPairs() }
     val bitmaps = remember { mutableStateMapOf<String, Bitmap>() }
     var isLoading by remember { mutableStateOf(true) }
+    var isBitmapsLoaded by remember { mutableStateOf(false) }
+    var arSession by remember { mutableStateOf<Session?>(null) }
 
     // カメラ権限の状態管理とリクエスト処理
     var hasCameraPermission by remember {
@@ -107,7 +109,34 @@ fun ArViewScreen(
                     bitmaps[pair.id] = bitmap
                 }
             }
-            isLoading = false
+            isBitmapsLoaded = true
+        }
+    }
+
+    // ARセッションが起動し、かつマーカー画像のロードが終わったら、バックグラウンドスレッドで画像データベースを構築・登録する
+    LaunchedEffect(arSession, isBitmapsLoaded) {
+        val session = arSession
+        if (session != null && isBitmapsLoaded && isLoading) {
+            withContext(Dispatchers.IO) {
+                val database = AugmentedImageDatabase(session)
+                for (pair in pairs) {
+                    val bitmap = bitmaps[pair.id]
+                    if (bitmap != null) {
+                        database.addImage(pair.id, bitmap, pair.physicalWidth)
+                    }
+                }
+                try {
+                    val config = session.config
+                    config.augmentedImageDatabase = database
+                    config.focusMode = Config.FocusMode.AUTO
+                    session.configure(config)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                withContext(Dispatchers.Main) {
+                    isLoading = false
+                }
+            }
         }
     }
 
@@ -140,37 +169,15 @@ fun ArViewScreen(
                     Text("カメラ権限を許可")
                 }
             }
-        } else if (isLoading) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                CircularProgressIndicator(color = Color.White)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "マーカー画像を読み込んでいます...",
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
         } else {
-            // ARSceneViewを全画面表示
+            // ARSceneViewを全画面表示 (常に背面に配置)
             ARSceneView(
                 modifier = Modifier.fillMaxSize(),
                 engine = engine,
                 cameraStream = cameraStream,
                 sessionConfiguration = { session, config ->
-                    // 動的画像データベースの作成と登録
-                    val database = AugmentedImageDatabase(session)
-                    for (pair in pairs) {
-                        val bitmap = bitmaps[pair.id]
-                        if (bitmap != null) {
-                            database.addImage(pair.id, bitmap, pair.physicalWidth)
-                        }
-                    }
-                    config.augmentedImageDatabase = database
-                    // 画像認識をスムーズにするためフォーカスモードをAUTOに設定
+                    arSession = session
+                    // 初期構成（画像認識をスムーズにするためフォーカスモードをAUTOに設定）
                     config.focusMode = Config.FocusMode.AUTO
                 },
                 onSessionUpdated = { session, frame ->
@@ -280,6 +287,29 @@ fun ArViewScreen(
                         color = Color.White,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
+                }
+            }
+
+            // マーカー画像デコードおよびARCoreデータベース構築中のローディング表示
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator(color = Color.White)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "マーカー画像を読み込んでいます...",
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
         }
