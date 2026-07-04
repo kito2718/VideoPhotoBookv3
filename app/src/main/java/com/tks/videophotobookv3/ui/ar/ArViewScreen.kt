@@ -29,6 +29,7 @@ import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberMaterialLoader
 import io.github.sceneview.math.Scale
 import io.github.sceneview.math.Size
+import io.github.sceneview.math.Rotation
 import com.tks.videophotobookv3.model.ArKeyPair
 import com.tks.videophotobookv3.repository.KeyPairRepository
 import com.tks.videophotobookv3.ui.main.loadBitmapFromUri
@@ -257,7 +258,8 @@ fun ArViewScreen(
                     AnchorNode(anchor = activeVideo.anchor) {
                         VideoNode(
                             player = activeVideo.mediaPlayer,
-                            size = activeVideo.size
+                            size = activeVideo.size,
+                            rotation = Rotation(x = -90f, y = 0f, z = 0f)
                         )
                     }
                 }
