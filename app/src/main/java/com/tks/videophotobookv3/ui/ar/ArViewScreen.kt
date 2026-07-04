@@ -28,6 +28,7 @@ import io.github.sceneview.node.VideoNode
 import io.github.sceneview.rememberEngine
 import io.github.sceneview.rememberMaterialLoader
 import io.github.sceneview.math.Scale
+import io.github.sceneview.math.Size
 import com.tks.videophotobookv3.model.ArKeyPair
 import com.tks.videophotobookv3.repository.KeyPairRepository
 import com.tks.videophotobookv3.ui.main.loadBitmapFromUri
@@ -39,7 +40,7 @@ private class ActiveVideo(
     val id: String,
     val anchor: Anchor,
     val mediaPlayer: MediaPlayer,
-    val scale: Scale
+    val size: Size
 )
 
 @Composable
@@ -194,8 +195,19 @@ fun ArViewScreen(
                                         prepare()
                                     }
 
-                                    // マーカー画像の物理サイズにスケーリング
-                                    val scale = Scale(image.extentX, 1.0f, image.extentZ)
+                                    // 動画のアスペクト比を計算し、マーカー画像の物理サイズに合わせたSizeを算出（アスペクト比を維持してフィット）
+                                    val videoWidth = mediaPlayer.videoWidth.toFloat()
+                                    val videoHeight = mediaPlayer.videoHeight.toFloat()
+                                    val videoRatio = if (videoWidth > 0f && videoHeight > 0f) videoWidth / videoHeight else (image.extentX / image.extentZ)
+                                    val imageRatio = image.extentX / image.extentZ
+
+                                    val size = if (videoRatio > imageRatio) {
+                                        // 横長動画：マーカーの横幅に合わせ、縦幅をアスペクト比で縮小
+                                        Size(image.extentX, image.extentX / videoRatio)
+                                    } else {
+                                        // 縦長動画：マーカーの縦幅に合わせ、横幅をアスペクト比で縮小
+                                        Size(image.extentZ * videoRatio, image.extentZ)
+                                    }
 
                                     // 描画開始
                                     mediaPlayer.start()
@@ -205,7 +217,7 @@ fun ArViewScreen(
                                         id = id,
                                         anchor = anchor,
                                         mediaPlayer = mediaPlayer,
-                                        scale = scale
+                                        size = size
                                     )
                                 } else {
                                     // 既に登録済みの場合は、一時停止されていたら再生再開
@@ -245,7 +257,7 @@ fun ArViewScreen(
                     AnchorNode(anchor = activeVideo.anchor) {
                         VideoNode(
                             player = activeVideo.mediaPlayer,
-                            scale = activeVideo.scale
+                            size = activeVideo.size
                         )
                     }
                 }
