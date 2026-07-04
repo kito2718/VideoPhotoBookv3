@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.tks.videophotobookv3.ArView
+import com.tks.videophotobookv3.R
 import com.tks.videophotobookv3.model.ArKeyPair
 import com.tks.videophotobookv3.repository.KeyPairRepository
 import kotlinx.coroutines.Dispatchers
@@ -102,7 +104,7 @@ fun MainScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "登録されているペアはありません。\n+ ボタンから追加してください。",
+                        text = stringResource(R.string.no_pairs),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray,
                         textAlign = TextAlign.Center
@@ -142,7 +144,7 @@ fun MainScreen(
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
-                            text = "AR 起動",
+                            text = stringResource(R.string.ar_launch),
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Normal
                             )
@@ -209,21 +211,21 @@ fun PairItemRow(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "画像: $markerName",
+                text = stringResource(R.string.image_label, markerName),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "動画: $videoName",
+                text = stringResource(R.string.video_label, videoName),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray,
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "幅: ${pair.physicalWidth}m | 拡大率: ${pair.scaleFactor}倍",
+                text = stringResource(R.string.info_label, pair.physicalWidth.toString(), pair.scaleFactor.toString()),
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.LightGray
             )
@@ -285,8 +287,8 @@ fun AddKeyPairDialog(
     var physicalWidthStr by remember { mutableStateOf("0.1") }
     var scaleFactorStr by remember { mutableStateOf("1.0") }
 
-    val markerName = markerUri?.let { getFileName(context, it) } ?: "選択されていません"
-    val videoName = videoUri?.let { getFileName(context, it) } ?: "選択されていません"
+    val markerName = markerUri?.let { getFileName(context, it) } ?: stringResource(R.string.tap_to_select)
+    val videoName = videoUri?.let { getFileName(context, it) } ?: stringResource(R.string.select_video_btn)
 
     // 画像ピッカーのランチャー
     val pickImageLauncher = rememberLauncherForActivityResult(
@@ -321,13 +323,13 @@ fun AddKeyPairDialog(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "新しいペアを追加",
+                    text = stringResource(R.string.add_pair_title),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 // マーカー画像選択
-                Text("1. マーカー画像を選択", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(stringResource(R.string.step_image), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
                 Box(
                     modifier = Modifier
@@ -351,10 +353,10 @@ fun AddKeyPairDialog(
                             modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("タップして変更", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                            Text(stringResource(R.string.tap_to_change), color = Color.White, style = MaterialTheme.typography.bodySmall)
                         }
                     } else {
-                        Text("タップして画像を選択", color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.tap_to_select), color = Color.Gray, style = MaterialTheme.typography.bodySmall)
                     }
                 }
                 Text(
@@ -365,7 +367,7 @@ fun AddKeyPairDialog(
                 )
 
                 // 動画選択
-                Text("2. 重ね合わせる動画を選択", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(stringResource(R.string.step_video), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedButton(
                     onClick = {
@@ -377,7 +379,7 @@ fun AddKeyPairDialog(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
                 ) {
-                    Text("動画を選択", fontWeight = FontWeight.Normal)
+                    Text(stringResource(R.string.select_video_btn), fontWeight = FontWeight.Normal)
                 }
                 Text(
                     text = videoName,
@@ -387,7 +389,7 @@ fun AddKeyPairDialog(
                 )
 
                 // 物理サイズ入力
-                Text("3. 画像の実際の横幅 (メートル)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(stringResource(R.string.step_width), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = physicalWidthStr,
@@ -398,14 +400,14 @@ fun AddKeyPairDialog(
                     singleLine = true
                 )
                 Text(
-                    text = "例: 0.1 = 10cm, 0.2 = 20cm",
+                    text = stringResource(R.string.width_hint),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.LightGray,
                     modifier = Modifier.padding(top = 2.dp, bottom = 16.dp)
                 )
 
                 // 拡大率入力
-                Text("4. 拡大率 (倍率)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(stringResource(R.string.step_scale), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = scaleFactorStr,
@@ -416,7 +418,7 @@ fun AddKeyPairDialog(
                     singleLine = true
                 )
                 Text(
-                    text = "例: 1.0 = 等倍, 1.2 = 1.2倍に拡大表示",
+                    text = stringResource(R.string.scale_hint),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.LightGray,
                     modifier = Modifier.padding(top = 2.dp, bottom = 24.dp)
@@ -428,7 +430,7 @@ fun AddKeyPairDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss, colors = ButtonDefaults.textButtonColors(contentColor = Color.Gray)) {
-                        Text("キャンセル")
+                        Text(stringResource(R.string.cancel))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -444,7 +446,7 @@ fun AddKeyPairDialog(
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("保存")
+                        Text(stringResource(R.string.save))
                     }
                 }
             }
@@ -465,8 +467,8 @@ fun EditKeyPairDialog(
     var physicalWidthStr by remember { mutableStateOf(pair.physicalWidth.toString()) }
     var scaleFactorStr by remember { mutableStateOf(pair.scaleFactor.toString()) }
 
-    val markerName = markerUri?.let { getFileName(context, it) } ?: "選択されていません"
-    val videoName = videoUri?.let { getFileName(context, it) } ?: "選択されていません"
+    val markerName = markerUri?.let { getFileName(context, it) } ?: stringResource(R.string.tap_to_select)
+    val videoName = videoUri?.let { getFileName(context, it) } ?: stringResource(R.string.select_video_btn)
 
     // 画像ピッカーのランチャー
     val pickImageLauncher = rememberLauncherForActivityResult(
@@ -501,13 +503,13 @@ fun EditKeyPairDialog(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "ペアを編集",
+                    text = stringResource(R.string.edit_pair_title),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 // マーカー画像選択
-                Text("1. マーカー画像を変更", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(stringResource(R.string.step_image_change), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
                 Box(
                     modifier = Modifier
@@ -531,10 +533,10 @@ fun EditKeyPairDialog(
                             modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("タップして変更", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                            Text(stringResource(R.string.tap_to_change), color = Color.White, style = MaterialTheme.typography.bodySmall)
                         }
                     } else {
-                        Text("タップして画像を選択", color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.tap_to_select), color = Color.Gray, style = MaterialTheme.typography.bodySmall)
                     }
                 }
                 Text(
@@ -545,7 +547,7 @@ fun EditKeyPairDialog(
                 )
 
                 // 動画選択
-                Text("2. 重ね合わせる動画を変更", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(stringResource(R.string.step_video_change), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedButton(
                     onClick = {
@@ -557,7 +559,7 @@ fun EditKeyPairDialog(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
                 ) {
-                    Text("動画を変更", fontWeight = FontWeight.Normal)
+                    Text(stringResource(R.string.change_video_btn), fontWeight = FontWeight.Normal)
                 }
                 Text(
                     text = videoName,
@@ -567,7 +569,7 @@ fun EditKeyPairDialog(
                 )
 
                 // 物理サイズ入力
-                Text("3. 画像の実際の横幅 (メートル)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(stringResource(R.string.step_width), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = physicalWidthStr,
@@ -578,14 +580,14 @@ fun EditKeyPairDialog(
                     singleLine = true
                 )
                 Text(
-                    text = "例: 0.1 = 10cm, 0.2 = 20cm",
+                    text = stringResource(R.string.width_hint),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.LightGray,
                     modifier = Modifier.padding(top = 2.dp, bottom = 16.dp)
                 )
 
                 // 拡大率入力
-                Text("4. 拡大率 (倍率)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Text(stringResource(R.string.step_scale), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
                     value = scaleFactorStr,
@@ -596,7 +598,7 @@ fun EditKeyPairDialog(
                     singleLine = true
                 )
                 Text(
-                    text = "例: 1.0 = 等倍, 1.2 = 1.2倍に拡大表示",
+                    text = stringResource(R.string.scale_hint),
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.LightGray,
                     modifier = Modifier.padding(top = 2.dp, bottom = 24.dp)
@@ -608,7 +610,7 @@ fun EditKeyPairDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss, colors = ButtonDefaults.textButtonColors(contentColor = Color.Gray)) {
-                        Text("キャンセル")
+                        Text(stringResource(R.string.cancel))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -624,7 +626,7 @@ fun EditKeyPairDialog(
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("保存")
+                        Text(stringResource(R.string.save))
                     }
                 }
             }

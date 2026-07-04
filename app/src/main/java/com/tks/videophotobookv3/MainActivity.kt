@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
     // ARCoreのサポートチェック
     val availability = ArCoreApk.getInstance().checkAvailability(this)
     if (!availability.isTransient() && !availability.isSupported()) {
-      Toast.makeText(this, "このデバイスはARCoreに対応していない可能性があります。", Toast.LENGTH_LONG).show()
+      Toast.makeText(this, getString(R.string.arcore_unsupported), Toast.LENGTH_LONG).show()
     }
 
     enableEdgeToEdge()

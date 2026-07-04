@@ -18,8 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.tks.videophotobookv3.R
 import com.google.ar.core.*
 import io.github.sceneview.ar.ARSceneView
 import io.github.sceneview.ar.rememberARCameraStream
@@ -152,7 +154,7 @@ fun ArViewScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "AR機能を使用するにはカメラ権限が必要です。",
+                    text = stringResource(R.string.camera_permission_required),
                     color = Color.Black,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -166,7 +168,7 @@ fun ArViewScreen(
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("カメラ権限を許可")
+                    Text(stringResource(R.string.allow_camera_permission))
                 }
             }
         } else {
@@ -283,7 +285,7 @@ fun ArViewScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "ペアデータが登録されていません。\n設定画面で追加してください。",
+                        text = stringResource(R.string.no_pairs_ar),
                         color = Color.White,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
@@ -305,7 +307,7 @@ fun ArViewScreen(
                         CircularProgressIndicator(color = Color.White)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "マーカー画像を読み込んでいます...",
+                            text = stringResource(R.string.loading_markers),
                             color = Color.White,
                             style = MaterialTheme.typography.bodyMedium
                         )
