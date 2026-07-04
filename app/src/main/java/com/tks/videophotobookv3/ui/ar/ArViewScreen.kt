@@ -202,13 +202,17 @@ fun ArViewScreen(
                                     val videoRatio = if (videoWidth > 0f && videoHeight > 0f) videoWidth / videoHeight else (image.extentX / image.extentZ)
                                     val imageRatio = image.extentX / image.extentZ
 
-                                    val size = if (videoRatio > imageRatio) {
+                                    val baseSize = if (videoRatio > imageRatio) {
                                         // 横長動画：マーカーの横幅に合わせ、縦幅をアスペクト比で縮小
                                         Size(image.extentX, image.extentX / videoRatio)
                                     } else {
                                         // 縦長動画：マーカーの縦幅に合わせ、横幅をアスペクト比で縮小
                                         Size(image.extentZ * videoRatio, image.extentZ)
                                     }
+
+                                    // 拡大率（scaleFactor）を適用（古いデータで0またはマイナス値の場合は等倍1.0にする）
+                                    val scale = if (pair.scaleFactor <= 0f) 1f else pair.scaleFactor
+                                    val size = Size(baseSize.x * scale, baseSize.y * scale)
 
                                     // 描画開始
                                     mediaPlayer.start()

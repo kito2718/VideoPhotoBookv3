@@ -23,25 +23,27 @@ class MainScreenViewModel(private val repository: KeyPairRepository) : ViewModel
         }
     }
 
-    fun addPair(markerUri: String, videoUri: String, physicalWidth: Float) {
+    fun addPair(markerUri: String, videoUri: String, physicalWidth: Float, scaleFactor: Float) {
         viewModelScope.launch {
             val newPair = ArKeyPair(
                 markerUri = markerUri,
                 videoUri = videoUri,
-                physicalWidth = physicalWidth
+                physicalWidth = physicalWidth,
+                scaleFactor = scaleFactor
             )
             repository.addPair(newPair)
             loadPairs()
         }
     }
 
-    fun updatePair(id: String, markerUri: String, videoUri: String, physicalWidth: Float) {
+    fun updatePair(id: String, markerUri: String, videoUri: String, physicalWidth: Float, scaleFactor: Float) {
         viewModelScope.launch {
             val updatedPair = ArKeyPair(
                 id = id,
                 markerUri = markerUri,
                 videoUri = videoUri,
-                physicalWidth = physicalWidth
+                physicalWidth = physicalWidth,
+                scaleFactor = scaleFactor
             )
             repository.updatePair(updatedPair)
             loadPairs()

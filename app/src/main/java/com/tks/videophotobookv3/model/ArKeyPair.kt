@@ -6,5 +6,6 @@ data class ArKeyPair(
     val id: String = UUID.randomUUID().toString(),
     val markerUri: String,
     val videoUri: String,
-    val physicalWidth: Float = 0.1f // 物理的な横幅（メートル、デフォルト0.1m = 10cm）
+    val physicalWidth: Float = 0.1f, // 物理的な横幅（メートル、デフォルト0.1m = 10cm）
+    val scaleFactor: Float = 1.0f    // 拡大率（デフォルト1.0 = 100%）
 )

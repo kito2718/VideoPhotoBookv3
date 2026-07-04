@@ -155,8 +155,8 @@ fun MainScreen(
         if (showAddDialog) {
             AddKeyPairDialog(
                 onDismiss = { showAddDialog = false },
-                onSave = { markerUri, videoUri, width ->
-                    viewModel.addPair(markerUri, videoUri, width)
+                onSave = { markerUri, videoUri, width, scale ->
+                    viewModel.addPair(markerUri, videoUri, width, scale)
                     showAddDialog = false
                 }
             )
@@ -166,8 +166,8 @@ fun MainScreen(
             EditKeyPairDialog(
                 pair = editingPair!!,
                 onDismiss = { editingPair = null },
-                onSave = { markerUri, videoUri, width ->
-                    viewModel.updatePair(editingPair!!.id, markerUri, videoUri, width)
+                onSave = { markerUri, videoUri, width, scale ->
+                    viewModel.updatePair(editingPair!!.id, markerUri, videoUri, width, scale)
                     editingPair = null
                 }
             )
@@ -223,7 +223,7 @@ fun PairItemRow(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "幅: ${pair.physicalWidth}m",
+                text = "幅: ${pair.physicalWidth}m | 拡大率: ${pair.scaleFactor}倍",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.LightGray
             )
@@ -277,12 +277,13 @@ fun UriPreviewImage(
 @Composable
 fun AddKeyPairDialog(
     onDismiss: () -> Unit,
-    onSave: (String, String, Float) -> Unit
+    onSave: (String, String, Float, Float) -> Unit
 ) {
     val context = LocalContext.current
     var markerUri by remember { mutableStateOf<Uri?>(null) }
     var videoUri by remember { mutableStateOf<Uri?>(null) }
     var physicalWidthStr by remember { mutableStateOf("0.1") }
+    var scaleFactorStr by remember { mutableStateOf("1.0") }
 
     val markerName = markerUri?.let { getFileName(context, it) } ?: "選択されていません"
     val videoName = videoUri?.let { getFileName(context, it) } ?: "選択されていません"
@@ -400,6 +401,24 @@ fun AddKeyPairDialog(
                     text = "例: 0.1 = 10cm, 0.2 = 20cm",
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.LightGray,
+                    modifier = Modifier.padding(top = 2.dp, bottom = 16.dp)
+                )
+
+                // 拡大率入力
+                Text("4. 拡大率 (倍率)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = scaleFactorStr,
+                    onValueChange = { scaleFactorStr = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
+                )
+                Text(
+                    text = "例: 1.0 = 等倍, 1.2 = 1.2倍に拡大表示",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.LightGray,
                     modifier = Modifier.padding(top = 2.dp, bottom = 24.dp)
                 )
 
@@ -415,7 +434,8 @@ fun AddKeyPairDialog(
                     Button(
                         onClick = {
                             val width = physicalWidthStr.toFloatOrNull() ?: 0.1f
-                            onSave(markerUri.toString(), videoUri.toString(), width)
+                            val scale = scaleFactorStr.toFloatOrNull() ?: 1.0f
+                            onSave(markerUri.toString(), videoUri.toString(), width, scale)
                         },
                         enabled = markerUri != null && videoUri != null,
                         colors = ButtonDefaults.buttonColors(
@@ -437,12 +457,13 @@ fun AddKeyPairDialog(
 fun EditKeyPairDialog(
     pair: ArKeyPair,
     onDismiss: () -> Unit,
-    onSave: (String, String, Float) -> Unit
+    onSave: (String, String, Float, Float) -> Unit
 ) {
     val context = LocalContext.current
     var markerUri by remember { mutableStateOf<Uri?>(Uri.parse(pair.markerUri)) }
     var videoUri by remember { mutableStateOf<Uri?>(Uri.parse(pair.videoUri)) }
     var physicalWidthStr by remember { mutableStateOf(pair.physicalWidth.toString()) }
+    var scaleFactorStr by remember { mutableStateOf(pair.scaleFactor.toString()) }
 
     val markerName = markerUri?.let { getFileName(context, it) } ?: "選択されていません"
     val videoName = videoUri?.let { getFileName(context, it) } ?: "選択されていません"
@@ -560,6 +581,24 @@ fun EditKeyPairDialog(
                     text = "例: 0.1 = 10cm, 0.2 = 20cm",
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.LightGray,
+                    modifier = Modifier.padding(top = 2.dp, bottom = 16.dp)
+                )
+
+                // 拡大率入力
+                Text("4. 拡大率 (倍率)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = scaleFactorStr,
+                    onValueChange = { scaleFactorStr = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
+                )
+                Text(
+                    text = "例: 1.0 = 等倍, 1.2 = 1.2倍に拡大表示",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.LightGray,
                     modifier = Modifier.padding(top = 2.dp, bottom = 24.dp)
                 )
 
@@ -575,7 +614,8 @@ fun EditKeyPairDialog(
                     Button(
                         onClick = {
                             val width = physicalWidthStr.toFloatOrNull() ?: pair.physicalWidth
-                            onSave(markerUri.toString(), videoUri.toString(), width)
+                            val scale = scaleFactorStr.toFloatOrNull() ?: pair.scaleFactor
+                            onSave(markerUri.toString(), videoUri.toString(), width, scale)
                         },
                         enabled = markerUri != null && videoUri != null,
                         colors = ButtonDefaults.buttonColors(
