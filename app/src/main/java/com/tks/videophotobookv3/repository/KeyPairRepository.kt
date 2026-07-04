@@ -32,6 +32,11 @@ class KeyPairRepository(context: Context) {
         savePairs(current)
     }
 
+    fun updatePair(updatedPair: ArKeyPair) {
+        val current = getPairs().map { if (it.id == updatedPair.id) updatedPair else it }
+        savePairs(current)
+    }
+
     fun deletePair(id: String) {
         val current = getPairs().filter { it.id != id }
         savePairs(current)

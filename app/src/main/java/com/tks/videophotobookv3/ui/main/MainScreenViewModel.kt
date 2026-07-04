@@ -35,6 +35,19 @@ class MainScreenViewModel(private val repository: KeyPairRepository) : ViewModel
         }
     }
 
+    fun updatePair(id: String, markerUri: String, videoUri: String, physicalWidth: Float) {
+        viewModelScope.launch {
+            val updatedPair = ArKeyPair(
+                id = id,
+                markerUri = markerUri,
+                videoUri = videoUri,
+                physicalWidth = physicalWidth
+            )
+            repository.updatePair(updatedPair)
+            loadPairs()
+        }
+    }
+
     fun deletePair(id: String) {
         viewModelScope.launch {
             repository.deletePair(id)

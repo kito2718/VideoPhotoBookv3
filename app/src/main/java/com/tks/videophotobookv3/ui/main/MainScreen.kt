@@ -58,6 +58,7 @@ fun MainScreen(
     }
     val keyPairs by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
+    var editingPair by remember { mutableStateOf<ArKeyPair?>(null) }
 
     Scaffold(
         modifier = modifier,
@@ -121,6 +122,7 @@ fun MainScreen(
                         items(keyPairs) { pair ->
                             PairItemRow(
                                 pair = pair,
+                                onEdit = { editingPair = pair },
                                 onDelete = { viewModel.deletePair(pair.id) }
                             )
                         }
@@ -159,12 +161,24 @@ fun MainScreen(
                 }
             )
         }
+
+        if (editingPair != null) {
+            EditKeyPairDialog(
+                pair = editingPair!!,
+                onDismiss = { editingPair = null },
+                onSave = { markerUri, videoUri, width ->
+                    viewModel.updatePair(editingPair!!.id, markerUri, videoUri, width)
+                    editingPair = null
+                }
+            )
+        }
     }
 }
 
 @Composable
 fun PairItemRow(
     pair: ArKeyPair,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     val context = LocalContext.current
@@ -175,6 +189,7 @@ fun PairItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, Color(0xFFEEEEEE), RoundedCornerShape(12.dp))
+            .clickable { onEdit() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -313,17 +328,33 @@ fun AddKeyPairDialog(
                 // マーカー画像選択
                 Text("1. マーカー画像を選択", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 Spacer(modifier = Modifier.height(4.dp))
-                OutlinedButton(
-                    onClick = {
-                        pickImageLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xFFFAFAFA))
+                        .clickable {
+                            pickImageLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text("画像を選択", fontWeight = FontWeight.Normal)
+                    if (markerUri != null) {
+                        UriPreviewImage(
+                            uriString = markerUri.toString(),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("タップして変更", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        }
+                    } else {
+                        Text("タップして画像を選択", color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+                    }
                 }
                 Text(
                     text = markerName,
@@ -384,6 +415,166 @@ fun AddKeyPairDialog(
                     Button(
                         onClick = {
                             val width = physicalWidthStr.toFloatOrNull() ?: 0.1f
+                            onSave(markerUri.toString(), videoUri.toString(), width)
+                        },
+                        enabled = markerUri != null && videoUri != null,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Black,
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("保存")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditKeyPairDialog(
+    pair: ArKeyPair,
+    onDismiss: () -> Unit,
+    onSave: (String, String, Float) -> Unit
+) {
+    val context = LocalContext.current
+    var markerUri by remember { mutableStateOf<Uri?>(Uri.parse(pair.markerUri)) }
+    var videoUri by remember { mutableStateOf<Uri?>(Uri.parse(pair.videoUri)) }
+    var physicalWidthStr by remember { mutableStateOf(pair.physicalWidth.toString()) }
+
+    val markerName = markerUri?.let { getFileName(context, it) } ?: "選択されていません"
+    val videoName = videoUri?.let { getFileName(context, it) } ?: "選択されていません"
+
+    // 画像ピッカーのランチャー
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            persistUriAccess(context, uri)
+            markerUri = uri
+        }
+    }
+
+    // 動画ピッカーのランチャー
+    val pickVideoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            persistUriAccess(context, uri)
+            videoUri = uri
+        }
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = Color.White,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "ペアを編集",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // マーカー画像選択
+                Text("1. マーカー画像を変更", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Spacer(modifier = Modifier.height(4.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xFFFAFAFA))
+                        .clickable {
+                            pickImageLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (markerUri != null) {
+                        UriPreviewImage(
+                            uriString = markerUri.toString(),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("タップして変更", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                        }
+                    } else {
+                        Text("タップして画像を選択", color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+                Text(
+                    text = markerName,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
+                    maxLines = 1
+                )
+
+                // 動画選択
+                Text("2. 重ね合わせる動画を変更", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedButton(
+                    onClick = {
+                        pickVideoLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
+                ) {
+                    Text("動画を変更", fontWeight = FontWeight.Normal)
+                }
+                Text(
+                    text = videoName,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
+                    maxLines = 1
+                )
+
+                // 物理サイズ入力
+                Text("3. 画像の実際の横幅 (メートル)", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = physicalWidthStr,
+                    onValueChange = { physicalWidthStr = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
+                )
+                Text(
+                    text = "例: 0.1 = 10cm, 0.2 = 20cm",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.LightGray,
+                    modifier = Modifier.padding(top = 2.dp, bottom = 24.dp)
+                )
+
+                // アクションボタン
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss, colors = ButtonDefaults.textButtonColors(contentColor = Color.Gray)) {
+                        Text("キャンセル")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            val width = physicalWidthStr.toFloatOrNull() ?: pair.physicalWidth
                             onSave(markerUri.toString(), videoUri.toString(), width)
                         },
                         enabled = markerUri != null && videoUri != null,
