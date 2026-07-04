@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">VideoPhotoBookv3</string>
+    <string name="no_pairs">No pairs registered.\nAdd one using the + button.</string>
+    <string name="ar_launch">Launch AR</string>
+    <string name="image_label">Image: %1$s</string>
+    <string name="video_label">Video: %1$s</string>
+    <string name="info_label">Width: %1$sm | Scale: %2$sx</string>
+    <string name="add_pair_title">Add New Pair</string>
+    <string name="step_image">1. Select Marker Image</string>
+    <string name="tap_to_change">Tap to change</string>
+    <string name="tap_to_select">Tap to select image</string>
+    <string name="step_video">2. Select Overlay Video</string>
+    <string name="select_video_btn">Select Video</string>
+    <string name="step_width">3. Physical Width of Image (meters)</string>
+    <string name="width_hint">e.g. 0.1 = 10cm, 0.2 = 20cm</string>
+    <string name="step_scale">4. Scale Factor</string>
+    <string name="scale_hint">e.g. 1.0 = Original, 1.2 = 1.2x scale</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="edit_pair_title">Edit Pair</string>
+    <string name="step_image_change">1. Change Marker Image</string>
+    <string name="step_video_change">2. Change Overlay Video</string>
+    <string name="change_video_btn">Change Video</string>
+    <string name="camera_permission_required">Camera permission is required to use AR features.</string>
+    <string name="allow_camera_permission">Allow Camera Permission</string>
+    <string name="no_pairs_ar">No pair data registered.\nPlease add in the settings screen.</string>
+    <string name="loading_markers">Loading marker images...</string>
+    <string name="arcore_unsupported">This device may not support ARCore.</string>
 </resources>

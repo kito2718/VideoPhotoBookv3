@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">VideoPhotoBookv3</string>
+    <string name="no_pairs">Nessuna coppia registrata.\nAggiungine una con il pulsante +.</string>
+    <string name="ar_launch">Avvia AR</string>
+    <string name="image_label">Immagine: %1$s</string>
+    <string name="video_label">Video: %1$s</string>
+    <string name="info_label">Larghezza: %1$sm | Scala: %2$sx</string>
+    <string name="add_pair_title">Aggiungi nuova coppia</string>
+    <string name="step_image">1. Seleziona immagine marker</string>
+    <string name="tap_to_change">Tocca per modificare</string>
+    <string name="tap_to_select">Tocca per selezionare l\'immagine</string>
+    <string name="step_video">2. Seleziona video sovrapposto</string>
+    <string name="select_video_btn">Seleziona video</string>
+    <string name="step_width">3. Larghezza fisica dell\'immagine (metri)</string>
+    <string name="width_hint">es. 0.1 = 10cm, 0.2 = 20cm</string>
+    <string name="step_scale">4. Fattore di scala</string>
+    <string name="scale_hint">es. 1.0 = dimensione reale, 1.2 = scala 1.2x</string>
+    <string name="cancel">Annulla</string>
+    <string name="save">Salva</string>
+    <string name="edit_pair_title">Modifica coppia</string>
+    <string name="step_image_change">1. Modifica immagine marker</string>
+    <string name="step_video_change">2. Modifica video sovrapposto</string>
+    <string name="change_video_btn">Modifica video</string>
+    <string name="camera_permission_required">È necessario il permesso della fotocamera per utilizzare le funzioni AR.</string>
+    <string name="allow_camera_permission">Consenti permesso fotocamera</string>
+    <string name="no_pairs_ar">Nessun dato di coppia registrato.\nAggiungi nella schermata delle impostazioni.</string>
+    <string name="loading_markers">Caricamento immagini marker in corso...</string>
+    <string name="arcore_unsupported">Questo dispositivo potrebbe non supportare ARCore.</string>
+</resources>

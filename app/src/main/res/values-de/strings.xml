@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">VideoPhotoBookv3</string>
+    <string name="no_pairs">Keine Paare registriert.\nFügen Sie eines mit dem + Button hinzu.</string>
+    <string name="ar_launch">AR starten</string>
+    <string name="image_label">Bild: %1$s</string>
+    <string name="video_label">Video: %1$s</string>
+    <string name="info_label">Breite: %1$sm | Skalierung: %2$sfach</string>
+    <string name="add_pair_title">Neues Paar hinzufügen</string>
+    <string name="step_image">1. Marker-Bild auswählen</string>
+    <string name="tap_to_change">Tippen zum Ändern</string>
+    <string name="tap_to_select">Tippen, um Bild auszuwählen</string>
+    <string name="step_video">2. Overlay-Video auswählen</string>
+    <string name="select_video_btn">Video auswählen</string>
+    <string name="step_width">3. Physische Breite des Bildes (Meter)</string>
+    <string name="width_hint">z.B. 0.1 = 10cm, 0.2 = 20cm</string>
+    <string name="step_scale">4. Skalierungsfaktor</string>
+    <string name="scale_hint">z.B. 1.0 = Original, 1.2 = 1,2-fache Skalierung</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="save">Speichern</string>
+    <string name="edit_pair_title">Paar bearbeiten</string>
+    <string name="step_image_change">1. Marker-Bild ändern</string>
+    <string name="step_video_change">2. Overlay-Video ändern</string>
+    <string name="change_video_btn">Video ändern</string>
+    <string name="camera_permission_required">Für die Nutzung von AR-Funktionen ist die Kameraberechtigung erforderlich.</string>
+    <string name="allow_camera_permission">Kameraberechtigung erlauben</string>
+    <string name="no_pairs_ar">Keine Paardaten registriert.\nBitte im Einstellungsbildschirm hinzufügen.</string>
+    <string name="loading_markers">Marker-Bilder werden geladen...</string>
+    <string name="arcore_unsupported">Dieses Gerät unterstützt ARCore möglicherweise nicht.</string>
+</resources>

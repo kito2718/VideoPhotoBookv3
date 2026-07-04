@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">VideoPhotoBookv3</string>
+    <string name="no_pairs">登録されているペアはありません。\n+ ボタンから追加してください。</string>
+    <string name="ar_launch">AR 起動</string>
+    <string name="image_label">画像: %1$s</string>
+    <string name="video_label">動画: %1$s</string>
+    <string name="info_label">幅: %1$sm | 拡大率: %2$s倍</string>
+    <string name="add_pair_title">新しいペアを追加</string>
+    <string name="step_image">1. マーカー画像を選択</string>
+    <string name="tap_to_change">タップして変更</string>
+    <string name="tap_to_select">タップして画像を選択</string>
+    <string name="step_video">2. 重ね合わせる動画を選択</string>
+    <string name="select_video_btn">動画を選択</string>
+    <string name="step_width">3. 画像の実際の横幅 (メートル)</string>
+    <string name="width_hint">例: 0.1 = 10cm, 0.2 = 20cm</string>
+    <string name="step_scale">4. 拡大率 (倍率)</string>
+    <string name="scale_hint">例: 1.0 = 等倍, 1.2 = 1.2倍に拡大表示</string>
+    <string name="cancel">キャンセル</string>
+    <string name="save">保存</string>
+    <string name="edit_pair_title">ペアを編集</string>
+    <string name="step_image_change">1. マーカー画像を変更</string>
+    <string name="step_video_change">2. 重ね合わせる動画を変更</string>
+    <string name="change_video_btn">動画を変更</string>
+    <string name="camera_permission_required">AR機能を使用するにはカメラ権限が必要です。</string>
+    <string name="allow_camera_permission">カメラ権限を許可</string>
+    <string name="no_pairs_ar">ペアデータが登録されていません。\n設定画面で追加してください。</string>
+    <string name="loading_markers">マーカー画像を読み込んでいます...</string>
+    <string name="arcore_unsupported">このデバイスはARCoreに対応していない可能性があります。</string>
+</resources>
